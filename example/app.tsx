@@ -1,6 +1,5 @@
 import 'babel-polyfill'
 
-import 'draft-js-focus-plugin/lib/plugin.css'
 import 'draft-js-static-toolbar-plugin/lib/plugin.css'
 import 'normalize.css'
 
@@ -19,8 +18,6 @@ import {
 	UnderlineButton,
 	UnorderedListButton
 } from 'draft-js-buttons'
-import createFocusPlugin from 'draft-js-focus-plugin'
-import createImagePlugin from 'draft-js-image-plugin'
 import Editor, { composeDecorators } from 'draft-js-plugins-editor'
 import createToolbarPlugin, { Separator } from 'draft-js-static-toolbar-plugin'
 import * as React from 'react'
@@ -58,7 +55,9 @@ injectGlobal`
 		& svg {
 			fill: #888;
 		}
+	}
 
+	button.draft-button {
 		&:hover, &:focus {
 			background: #f3f3f3;
 			outline: 0; /* reset for :focus */
@@ -129,15 +128,8 @@ const Button = styled.button`
     }
 `
 
-const focusPlugin = createFocusPlugin()
-
-const imagePlugin = createImagePlugin({
-	decorator: composeDecorators(
-		focusPlugin.decorator
-	)
-})
-
 const toolbarImagePlugin = createToolbarImagePlugin()
+const { ImageButton } = toolbarImagePlugin
 
 const toolbarPlugin = createToolbarPlugin({
 	theme: {
@@ -155,12 +147,12 @@ const toolbarPlugin = createToolbarPlugin({
 		ItalicButton,
 		UnderlineButton,
 		CodeButton,
-		// LinkButton,
 		Separator,
 		UnorderedListButton,
 		OrderedListButton,
 		BlockquoteButton,
-		CodeBlockButton
+		CodeBlockButton,
+		ImageButton
 	]
 })
 
@@ -211,7 +203,7 @@ class App extends React.Component<any, AppState> {
 					</ToolBarWrapper>
 					<Editor
 						ref={el => this.editor = el}
-						plugins={[toolbarPlugin, toolbarImagePlugin, focusPlugin, imagePlugin]}
+						plugins={[toolbarPlugin, toolbarImagePlugin]}
 						editorState={this.state.editorState}
 						onChange={this.handleChange} />
 					<ReRenderTrigger/>
@@ -232,14 +224,27 @@ const initialState = {
 			data: {
 				src: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png'
 			}
+		},
+		1: {
+			type: 'image',
+			mutability: 'IMMUTABLE',
+			data: {
+				src: 'http://box.bdimg.com/static/fisp_static/common/img/searchbox/logo_news_276_88_1f9876a.png'
+			}
 		}
 	},
 	blocks: [{
 		key: '9gm3s',
-		text: 'You can have images in your text field. This is a very rudimentary example, but you can enhance the image plugin with resizing, focus or alignment plugins.',
+		text: 'This is the logo of www.baidu.com.',
 		type: 'unstyled',
 		depth: 0,
-		inlineStyleRanges: [],
+		inlineStyleRanges: [
+			{
+				length: 13,
+				offset: 20,
+				style: 'UNDERLINE'
+			}
+		],
 		entityRanges: [],
 		data: {}
 	}, {
@@ -256,7 +261,33 @@ const initialState = {
 		data: {}
 	}, {
 		key: 'e23a8',
-		text: 'See advanced examples further down …',
+		text: 'And this is the logo of news.baidu.com.',
+		type: 'unstyled',
+		depth: 0,
+		inlineStyleRanges: [
+			{
+				length: 14,
+				offset: 24,
+				style: 'UNDERLINE'
+			}
+		],
+		entityRanges: [],
+		data: {}
+	}, {
+		key: 'ov7s',
+		text: ' ',
+		type: 'atomic',
+		depth: 0,
+		inlineStyleRanges: [],
+		entityRanges: [{
+			offset: 0,
+			length: 1,
+			key: 1
+		}],
+		data: {}
+	}, {
+		key: 'e23a9',
+		text: 'OK, that is all ^_^',
 		type: 'unstyled',
 		depth: 0,
 		inlineStyleRanges: [],
