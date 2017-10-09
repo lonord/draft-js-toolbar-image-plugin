@@ -35,7 +35,9 @@ export default class Image extends React.Component<any, any> {
 			...elementProps
 		} = otherProps
 		const { src, width, alignment } = contentState.getEntity(block.getEntityAt(0)).getData()
-		const style: any = {}
+		const style: any = {
+			display: 'block'
+		}
 		if (width) {
 			const result = validateCSSSize(width)
 			if (result) {
@@ -45,7 +47,6 @@ export default class Image extends React.Component<any, any> {
 		if (alignment === 'center') {
 			style.marginLeft = 'auto'
 			style.marginRight = 'auto'
-			style.display = 'block'
 		}
 		if (theme) {
 			const combinedClassName = blockProps && blockProps.isFocused && blockProps.isFocused()

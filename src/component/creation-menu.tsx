@@ -38,8 +38,9 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 		setTimeout(() => requestEditorFocus && requestEditorFocus(), 100)
 	}
 
-	handleUploadClick = () => {
+	handleUpload = (files: File[]) => {
 		// TODO
+		console.log(files)
 	}
 
 	handleKeyboardInputDismiss = () => {
@@ -65,7 +66,7 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 				{separatorClass
 					? <div className={separatorClass} />
 					: <Separator />}
-				<UploadButton onClick={this.handleUploadClick} {...rest} />
+				<UploadButton {...rest} onFileUpload={this.handleUpload} />
 			</span>
 		)
 	}

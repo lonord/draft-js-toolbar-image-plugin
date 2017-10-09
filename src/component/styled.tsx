@@ -66,3 +66,12 @@ export const IconWrapper = styled.span`
 	text-align: center;
 	box-sizing: border-box;
 `
+
+export const InvisibleInput = styled.input`
+	position: absolute;
+	width: 0;
+	height: 0;
+	left: -10000px;
+	top: -10000px;
+	opacity: 0;
+`
