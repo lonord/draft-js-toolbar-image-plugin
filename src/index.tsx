@@ -111,8 +111,7 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 		onChange: (editorState: EditorState) => {
 			let newEditorState = editorState
 			if (lastEditorState
-				&& isImageBlockInSelection(lastEditorState)
-				&& !editorState.getSelection().equals(lastEditorState.getSelection())) {
+				&& isImageBlockInSelection(lastEditorState)) {
 				newEditorState = EditorState.forceSelection(editorState, editorState.getSelection())
 			}
 			lastEditorState = editorState

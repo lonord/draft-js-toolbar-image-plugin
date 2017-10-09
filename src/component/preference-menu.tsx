@@ -57,7 +57,7 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 				width: newSize
 			}))
 		}
-	}, 500)
+	}, 300)
 
 	handleChangeAlignment = (alignment: string) => {
 		const { getEditorState, setEditorState } = this.props
@@ -65,6 +65,9 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 			setEditorState(updateImageData(getEditorState(), {
 				alignment
 			}))
+			this.setState({
+				alignment: alignment === 'center' ? alignment : 'default'
+			})
 		}
 	}
 
@@ -85,7 +88,7 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 					const { width, alignment } = entity.getData()
 					this.setState({
 						inputValue: width || '',
-						alignment
+						alignment: alignment === 'center' ? alignment : 'default'
 					})
 				}
 			}
@@ -102,7 +105,7 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 				const { width, alignment } = entity.getData()
 				this.setState({
 					inputValue: width || '',
-					alignment
+					alignment: alignment === 'center' ? alignment : 'default'
 				})
 			}
 		}
@@ -115,9 +118,9 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 		return (
 			<span onClick={e => e.stopPropagation()}>
 				<AlignBlockDefaultButton theme={theme} alignment={alignment}
-					setAlignment={() => this.handleChangeAlignment('default')} />
+					setAlignment={({ alignment }) => this.handleChangeAlignment(alignment)} />
 				<AlignBlockCenterButton theme={theme} alignment={alignment}
-					setAlignment={() => this.handleChangeAlignment('center')} />
+					setAlignment={({ alignment }) => this.handleChangeAlignment(alignment)} />
 				{separatorClass
 					? <div className={separatorClass} />
 					: <Separator />}

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import unionClassNames from 'union-class-names'
 
+import validateCSSSize from '../util/css-size-validator'
 import { Image as StyledImage } from './styled'
 
 export default class Image extends React.Component<any, any> {
@@ -36,7 +37,10 @@ export default class Image extends React.Component<any, any> {
 		const { src, width, alignment } = contentState.getEntity(block.getEntityAt(0)).getData()
 		const style: any = {}
 		if (width) {
-			style.width = width
+			const result = validateCSSSize(width)
+			if (result) {
+				style.width = result
+			}
 		}
 		if (alignment === 'center') {
 			style.marginLeft = 'auto'

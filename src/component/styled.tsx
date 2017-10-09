@@ -8,6 +8,7 @@ export const Image = styled.img`
 	${(props: ImageProps) => props.focused ? `
 		border-radius: 2px;
 		box-shadow: 0 0 5px 2px #ACCEF7;
+		transition: border linear 0.2s, box-shadow linear 0.2s;
 	` : ''}
 `
 
