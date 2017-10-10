@@ -10,6 +10,7 @@ export interface ToolbarInputProps {
 	theme?: { wrapper: string, input: string }
 	wrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
+	autoFocus?: boolean
 }
 
 export default class ToolbarInput extends React.Component<ToolbarInputProps, any> {
@@ -30,7 +31,10 @@ export default class ToolbarInput extends React.Component<ToolbarInputProps, any
 	}
 
 	componentDidMount() {
-		setTimeout(() => this.editor && this.editor.focus(), 100)
+		const { autoFocus } = this.props
+		if (autoFocus) {
+			setTimeout(() => this.editor && this.editor.focus(), 100)
+		}
 	}
 
 	render() {

@@ -61,7 +61,8 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 					placeholder={inputPlaceholder}
 					theme={inputTheme}
 					wrapperComponent={wrapperComponent}
-					inputComponent={inputComponent} />
+					inputComponent={inputComponent}
+					autoFocus={true}/>
 				<CheckButton isDisabled={!this.state.inputValue} onClick={this.handleCheckClick} {...rest} />
 				{separatorClass
 					? <div className={separatorClass} />

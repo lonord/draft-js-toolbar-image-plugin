@@ -13,6 +13,7 @@ import addImage from './util/add-image'
 import {
 	isImageBlock,
 	isImageBlockInSelection,
+	selectImageWithBlockKey,
 	selectNextBlock,
 	selectPrevBlock
 } from './util/image-selection-util'
@@ -129,31 +130,8 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 					props: {
 						isFocused: () =>
 							selection.getAnchorKey() === contentBlockKey && isImageBlockInSelection(editorState),
-						onClick: (e: React.SyntheticEvent<HTMLImageElement>) => {
-							const node = e.currentTarget
-							let parentNode = node.parentElement
-							while (parentNode && parentNode.tagName !== 'FIGURE') {
-								if (parentNode.tagName === 'BODY') {
-									break
-								}
-								parentNode = parentNode.parentElement
-							}
-							if (parentNode.tagName === 'FIGURE') {
-								const selection = window.getSelection()
-								const range = document.createRange()
-								range.setStart(node, 0)
-								range.setEnd(node, 0)
-								selection.removeAllRanges()
-								selection.addRange(range)
-							}
-							const sel = selection.merge({
-								anchorKey: contentBlockKey,
-								anchorOffset: 0,
-								focusKey: contentBlockKey,
-								focusOffset: 0
-							}) as SelectionState
-							fns.setEditorState(EditorState.forceSelection(editorState, sel))
-						}
+						onClick: () =>
+							fns.setEditorState(selectImageWithBlockKey(editorState, contentBlockKey))
 					}
 				}
 			}

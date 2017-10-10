@@ -1,4 +1,29 @@
 import { ContentBlock, ContentState, EditorState, SelectionState } from 'draft-js'
+import DraftOffsetKey from 'draft-js/lib/DraftOffsetKey'
+
+export function selectImageWithBlockKey(editorState: EditorState, key: string) {
+	const offsetKey = DraftOffsetKey.encode(key, 0, 0)
+	const node = document.querySelectorAll(`[data-offset-key="${offsetKey}"]`)[0]
+	// set the native selection to the node so the caret is not in the text and
+	// the selectionState matches the native selection
+	if (node) {
+		const nativeSelection = window.getSelection()
+		const range = document.createRange()
+		range.setStart(node, 0)
+		range.setEnd(node, 0)
+		nativeSelection.removeAllRanges()
+		nativeSelection.addRange(range)
+	}
+
+	const selection = editorState.getSelection()
+	const sel = selection.merge({
+		anchorKey: key,
+		anchorOffset: 0,
+		focusKey: key,
+		focusOffset: 0
+	}) as SelectionState
+	return EditorState.forceSelection(editorState, sel)
+}
 
 export function isImageBlock(contentBlock: ContentBlock, contentState: ContentState) {
 	if (contentBlock && contentBlock.getType() === 'atomic') {

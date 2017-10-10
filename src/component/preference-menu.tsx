@@ -90,6 +90,7 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 						inputValue: width || '',
 						alignment: alignment === 'center' ? alignment : 'default'
 					})
+					this.currentEntityKey = key
 				}
 			}
 		}
