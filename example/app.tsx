@@ -128,7 +128,11 @@ const Button = styled.button`
     }
 `
 
-const toolbarImagePlugin = createToolbarImagePlugin()
+const toolbarImagePlugin = createToolbarImagePlugin({
+	imageUploadHandler: (file, cb) => {
+		//
+	}
+})
 const { ImageButton } = toolbarImagePlugin
 
 const toolbarPlugin = createToolbarPlugin({

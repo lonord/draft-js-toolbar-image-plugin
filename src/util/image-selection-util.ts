@@ -1,4 +1,4 @@
-import { ContentBlock, ContentState, EditorState, SelectionState } from 'draft-js'
+import { ContentBlock, ContentState, EditorState, EntityInstance, SelectionState } from 'draft-js'
 import DraftOffsetKey from 'draft-js/lib/DraftOffsetKey'
 
 export function selectImageWithBlockKey(editorState: EditorState, key: string) {
@@ -92,7 +92,7 @@ export function updateImageData(editorState: EditorState, data) {
 	return editorState
 }
 
-export function getImageEntity(editorState: EditorState) {
+export function getImageEntity(editorState: EditorState): EntityInstance {
 	const selection = editorState.getSelection()
 	if (selection.getAnchorKey() !== selection.getFocusKey()) {
 		return null

@@ -21,7 +21,7 @@ import insertNewLine from './util/insert-new-line'
 
 const d = debug('draft-js-toolbar-image-plugin')
 
-interface PluginFunctions {
+export interface PluginFunctions {
 	setEditorState(editorState: EditorState)
 	getEditorState(): EditorState
 	getReadOnly(): boolean
@@ -43,6 +43,9 @@ export interface ToolbarImagePluginOptions {
 	inputPlaceholder?: string
 	inputWrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
+	imageUploadHandler?(file: Blob, completeCallback: (err: Error | string, url: string) => void,
+		progressCallback?: (percent: number) => void): void
+	acceptImageFiles?(files: Blob[]): boolean | string
 }
 
 export default function createToolbarImagePlugin(options: ToolbarImagePluginOptions = {}) {
@@ -94,7 +97,11 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 			})
 		}),
 		items: [
-			decorateComponentWithProps(CreationMenu, menuDecoratedProps)
+			decorateComponentWithProps(CreationMenu, {
+				...menuDecoratedProps,
+				supportUpload: !!options.imageUploadHandler,
+				acceptImageFiles: options.acceptImageFiles
+			})
 		]
 	})
 

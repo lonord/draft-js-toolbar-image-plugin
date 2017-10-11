@@ -53,6 +53,8 @@
 		],
 		"no-submodule-imports": false,
 		"max-line-length": false,
-		"arrow-parens": false
+		"arrow-parens": false,
+		"align": false,
+		"space-before-function-paren": false
 	}
 }

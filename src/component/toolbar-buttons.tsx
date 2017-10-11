@@ -54,7 +54,7 @@ export const CheckButton = createToolbarButton({
 })
 
 export interface UploadButtonProps extends ToolbarButtonProps {
-	onFileUpload(files: File[])
+	onFileUpload(files: Blob[])
 }
 
 export class UploadButton extends React.Component<UploadButtonProps, any> {
@@ -62,7 +62,11 @@ export class UploadButton extends React.Component<UploadButtonProps, any> {
 	fileInput: HTMLInputElement = null
 
 	handleInputChange = (e) => {
-		const files: File[] = []
+		const files: Blob[] = []
+		if (!this.fileInput.files) {
+			console.error('Your browser does not support File or Blob api. See: https://developer.mozilla.org/en-US/docs/Web/API/Blob')
+			return
+		}
 		// tslint:disable-next-line:prefer-for-of
 		for (let i = 0; i < this.fileInput.files.length; i++) {
 			files.push(this.fileInput.files[i])

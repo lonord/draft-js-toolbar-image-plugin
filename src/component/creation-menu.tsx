@@ -1,6 +1,7 @@
 import { EditorState } from 'draft-js'
 import * as React from 'react'
 import addImage from '../util/add-image'
+import readImage from '../util/image-reader'
 import { Separator, ToolbarInputComponentClass, ToolbarInputWrapperComponentClass } from './styled'
 import { CheckButton, UploadButton } from './toolbar-buttons'
 import ToolbarInput from './toolbar-input'
@@ -15,6 +16,8 @@ export interface CreationMenuProps {
 	wrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
 	separatorClass?: string
+	supportUpload?: boolean
+	acceptImageFiles?(files: Blob[]): boolean | string
 }
 
 export default class CreationMenu extends React.Component<CreationMenuProps, any> {
@@ -38,9 +41,29 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 		setTimeout(() => requestEditorFocus && requestEditorFocus(), 100)
 	}
 
-	handleUpload = (files: File[]) => {
-		// TODO
-		console.log(files)
+	handleUpload = (files: Blob[]) => {
+		const { acceptImageFiles, getEditorState, setEditorState } = this.props
+		if (acceptImageFiles) {
+			const result = acceptImageFiles(files)
+			if (result !== true) {
+				//
+				return
+			}
+		}
+		if (getEditorState && setEditorState) {
+			readImage(files).then(dataURLs => {
+				for (const dataURL of dataURLs) {
+					addImage(getEditorState(), dataURL, {
+						insertType: 'shortcut'
+					})
+				}
+				setEditorState(dataURLs.reduce<EditorState>((editorState, dataURL) => {
+					return addImage(editorState, dataURL, {
+						insertType: 'shortcut'
+					})
+				}, getEditorState()))
+			})
+		}
 	}
 
 	handleKeyboardInputDismiss = () => {
@@ -50,7 +73,14 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 	}
 
 	render() {
-		const { inputTheme, inputPlaceholder, wrapperComponent, inputComponent, separatorClass, ...rest } = this.props
+		const {
+			inputTheme,
+			inputPlaceholder,
+			wrapperComponent,
+			inputComponent,
+			separatorClass,
+			acceptImageFiles,
+			supportUpload, ...rest } = this.props
 		return (
 			<span>
 				<ToolbarInput
@@ -64,10 +94,14 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 					inputComponent={inputComponent}
 					autoFocus={true}/>
 				<CheckButton isDisabled={!this.state.inputValue} onClick={this.handleCheckClick} {...rest} />
-				{separatorClass
-					? <div className={separatorClass} />
-					: <Separator />}
-				<UploadButton {...rest} onFileUpload={this.handleUpload} />
+				{supportUpload ?
+					separatorClass
+						? <div className={separatorClass} />
+						: <Separator />
+					: null}
+				{supportUpload
+					? <UploadButton {...rest} onFileUpload={this.handleUpload} />
+					: null}
 			</span>
 		)
 	}
