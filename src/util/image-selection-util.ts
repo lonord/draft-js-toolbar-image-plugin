@@ -92,6 +92,34 @@ export function updateImageData(editorState: EditorState, data) {
 	return editorState
 }
 
+export function removeImageData(editorState: EditorState, ...dataKeys: string[]) {
+	const selection = editorState.getSelection()
+	if (selection.getAnchorKey() !== selection.getFocusKey()) {
+		return editorState
+	}
+	if (!dataKeys || dataKeys.length === 0) {
+		return editorState
+	}
+	const contentState = editorState.getCurrentContent()
+	const contentBlock = contentState.getBlockForKey(selection.getAnchorKey())
+	if (contentBlock && contentBlock.getType() === 'atomic') {
+		const entityKey = contentBlock.getEntityAt(0)
+		const entity = contentState.getEntity(entityKey)
+		if (entity && entity.getType().toUpperCase() === 'IMAGE') {
+			const data = entity.getData()
+			const newData: any = {}
+			for (const k in data) {
+				if (dataKeys.indexOf(k) === -1) {
+					newData[k] = data[k]
+				}
+			}
+			const newContentState = (contentState as any).replaceEntityData(entityKey, newData)
+			return EditorState.push(editorState, newContentState, 'apply-entity')
+		}
+	}
+	return editorState
+}
+
 export function getImageEntity(editorState: EditorState): EntityInstance {
 	const selection = editorState.getSelection()
 	if (selection.getAnchorKey() !== selection.getFocusKey()) {
