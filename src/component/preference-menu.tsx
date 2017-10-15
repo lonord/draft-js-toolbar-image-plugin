@@ -6,7 +6,7 @@ import {
 } from 'draft-js-buttons'
 import * as debounce from 'lodash.debounce'
 import * as React from 'react'
-import { getImageEntity, getImageEntityKey, removeImageData, updateImageData } from '../util/image-selection-util'
+import { getImageEntity, getImageEntityKey, removeSelectedImageData, updateSelectedImageData } from '../util/image-selection-util'
 import {
 	IconWrapper,
 	Separator,
@@ -51,9 +51,9 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 		if (getEditorState && setEditorState) {
 			const newSize = this.state.inputValue
 			if (newSize.toUpperCase() === 'AUTO' || newSize.trim() === '') {
-				setEditorState(removeImageData(getEditorState(), 'width'))
+				setEditorState(removeSelectedImageData(getEditorState(), 'width'))
 			} else {
-				setEditorState(updateImageData(getEditorState(), {
+				setEditorState(updateSelectedImageData(getEditorState(), {
 					width: newSize
 				}))
 			}
@@ -64,11 +64,11 @@ export default class PreferenceMenu extends React.Component<PreferenceMenuProps,
 		const { getEditorState, setEditorState } = this.props
 		if (getEditorState && setEditorState) {
 			if (alignment === 'center') {
-				setEditorState(updateImageData(getEditorState(), {
+				setEditorState(updateSelectedImageData(getEditorState(), {
 					alignment
 				}))
 			} else {
-				setEditorState(removeImageData(getEditorState(), 'alignment'))
+				setEditorState(removeSelectedImageData(getEditorState(), 'alignment'))
 			}
 			this.setState({
 				alignment: alignment === 'center' ? alignment : 'default'

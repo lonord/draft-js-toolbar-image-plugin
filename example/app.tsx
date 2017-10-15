@@ -129,8 +129,9 @@ const Button = styled.button`
 `
 
 const toolbarImagePlugin = createToolbarImagePlugin({
-	imageUploadHandler: (file, cb) => {
-		//
+	imageUploadHandler: (file, cb) => {   // mock upload
+		setTimeout(() =>
+			cb(null, 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png'), 5000)
 	}
 })
 const { ImageButton } = toolbarImagePlugin
@@ -303,3 +304,5 @@ const initialState = {
 function createEditorState() {
 	return EditorState.createWithContent(convertFromRaw(initialState as any))
 }
+
+(window as any).draftConvertToRaw = convertToRaw

@@ -1,4 +1,4 @@
-import styled, { StyledComponentClass } from 'styled-components'
+import styled, { keyframes, StyledComponentClass } from 'styled-components'
 
 export interface ImageProps {
 	focused: boolean
@@ -75,3 +75,31 @@ export const InvisibleInput = styled.input`
 	top: -10000px;
 	opacity: 0;
 `
+
+export const CornerIconWrapper = styled.div`
+	position: relative;
+	width: 0;
+	height: 0;
+	left: 5px;
+	top: 5px;
+	z-index: 10000;
+`
+
+export const InlineBlock = styled.div`
+	display: inline-block;
+`
+
+const opacityChange = keyframes`
+	0%   {opacity:1;}
+	50%  {opacity:0.5;}
+	100% {opacity:1;}
+`
+export interface OpacityAnimationWrapperProps extends React.HTMLProps<HTMLDivElement> {
+	isPlay?: boolean
+	isSemitransparent?: boolean
+}
+export const OpacityAnimationWrapper = styled.div`
+	display: inline-block;
+	opacity: ${(props: OpacityAnimationWrapperProps) => props.isSemitransparent ? 0.5 : 1};
+	${(props: OpacityAnimationWrapperProps) => props.isPlay ? `animation: ${opacityChange} 1s linear infinite;` : ''}
+` as StyledComponentClass<OpacityAnimationWrapperProps, any>

@@ -1,8 +1,9 @@
 import debug from 'debug'
 import decorateComponentWithProps from 'decorate-component-with-props'
-import { ContentBlock, Editor, EditorState, SelectionState } from 'draft-js'
+import { ContentBlock, ContentState, Editor, EditorState, SelectionState } from 'draft-js'
 import createPicker from 'draft-js-plugin-editor-toolbar-picker'
 import * as React from 'react'
+import createRenderOrderFixer from 'react-render-order-fixer'
 
 import CreationMenu, { CreationMenuProps } from './component/creation-menu'
 import ImageComponent from './component/image'
@@ -18,6 +19,7 @@ import {
 	selectPrevBlock
 } from './util/image-selection-util'
 import insertNewLine from './util/insert-new-line'
+import createUploadManager, { UploadHandler } from './util/upload-manager'
 
 const d = debug('draft-js-toolbar-image-plugin')
 
@@ -43,9 +45,8 @@ export interface ToolbarImagePluginOptions {
 	inputPlaceholder?: string
 	inputWrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
-	imageUploadHandler?(file: Blob, completeCallback: (err: Error | string, url: string) => void,
-		progressCallback?: (percent: number) => void): void
-	acceptImageFiles?(files: Blob[]): boolean | string
+	imageUploadHandler?: UploadHandler
+	acceptImageFiles?(files: File[]): boolean | string
 }
 
 export default function createToolbarImagePlugin(options: ToolbarImagePluginOptions = {}) {
@@ -58,14 +59,25 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 		Image = options.decorator(Image)
 	}
 
+	const uploadManager = options.imageUploadHandler
+		? createUploadManager({
+			imageUploadHandler: options.imageUploadHandler
+		})
+		: null
+
 	const theme = options.theme || {}
 
-	const ThemedImage = decorateComponentWithProps(Image, {
+	const renderFixer = createRenderOrderFixer({ alwaysUpdate: true })
+
+	const DecoratedImage = renderFixer.withOrderFixer(decorateComponentWithProps(Image, {
 		theme: theme.image || theme.imageFocus ? {
 			image: theme.image,
 			imageFocus: theme.imageFocus
-		} : null
-	})
+		} : null,
+		uploadManager,
+		setEditorState: (editorState: EditorState) => pluginFunctions.setEditorState(editorState),
+		getEditorState: () => pluginFunctions.getEditorState()
+	}))
 
 	const shouldForceShowPreference = () => pluginFunctions && isImageBlockInSelection(pluginFunctions.getEditorState())
 
@@ -100,7 +112,8 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 			decorateComponentWithProps(CreationMenu, {
 				...menuDecoratedProps,
 				supportUpload: !!options.imageUploadHandler,
-				acceptImageFiles: options.acceptImageFiles
+				acceptImageFiles: options.acceptImageFiles,
+				uploadManager
 			})
 		]
 	})
@@ -119,8 +132,10 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 		onChange: (editorState: EditorState) => {
 			let newEditorState = editorState
 			if (lastEditorState
-				&& isImageBlockInSelection(lastEditorState)) {
+				&& !editorState.getSelection().equals(lastEditorState.getSelection())) {
 				newEditorState = EditorState.forceSelection(editorState, editorState.getSelection())
+			} else {
+				renderFixer.triggerAction()
 			}
 			lastEditorState = editorState
 			return newEditorState
@@ -132,7 +147,7 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 				const selection = editorState.getSelection()
 				const contentBlockKey = block.getKey()
 				return {
-					component: ThemedImage,
+					component: DecoratedImage,
 					editable: false,
 					props: {
 						isFocused: () =>
@@ -185,4 +200,8 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 		addImage,
 		ImageButton
 	}
+}
+
+export {
+	UploadHandler
 }

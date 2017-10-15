@@ -1,5 +1,10 @@
 import * as React from 'react'
 
+export interface SVGIconProps {
+	size?: number
+	color?: string
+}
+
 export function UploadIcon() {
 	return (
 		<svg height="24" viewBox="-50 -50 612 612" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -47,3 +52,10 @@ export function ResizeIcon() {
 		</svg>
 	)
 }
+
+export const WrongIcon = (props: SVGIconProps) => (
+	<svg height={props.size || 24} viewBox="-2 -2 20 20" width={props.size || 24} xmlns="http://www.w3.org/2000/svg">
+		<path fill={props.color} d={`M8,0C3.582,0,0,3.582,0,8s3.582,8,8,8s8-3.582,8-8S12.418,0,8,0z M8,12.984c-0.552,0-1-0.448-1-1c0-0.553,0.448-1,1-1
+			s1,0.447,1,1C9,12.536,8.552,12.984,8,12.984z M9,9c0,0.552-0.448,1-1,1S7,9.552,7,9V4c0-0.552,0.448-1,1-1s1,0.448,1,1V9z`} />
+	</svg>
+)

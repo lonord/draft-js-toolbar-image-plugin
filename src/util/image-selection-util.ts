@@ -74,7 +74,7 @@ export function selectNextBlock(editorState: EditorState) {
 		: editorState
 }
 
-export function updateImageData(editorState: EditorState, data) {
+export function updateSelectedImageData(editorState: EditorState, data) {
 	const selection = editorState.getSelection()
 	if (selection.getAnchorKey() !== selection.getFocusKey()) {
 		return editorState
@@ -92,7 +92,18 @@ export function updateImageData(editorState: EditorState, data) {
 	return editorState
 }
 
-export function removeImageData(editorState: EditorState, ...dataKeys: string[]) {
+export function updateImageData(contentState: ContentState, contentBlock: ContentBlock, data) {
+	if (contentBlock && contentBlock.getType() === 'atomic') {
+		const entityKey = contentBlock.getEntityAt(0)
+		const entity = contentState.getEntity(entityKey)
+		if (entity && entity.getType().toUpperCase() === 'IMAGE') {
+			return contentState.mergeEntityData(entityKey, data)
+		}
+	}
+	return contentState
+}
+
+export function removeSelectedImageData(editorState: EditorState, ...dataKeys: string[]) {
 	const selection = editorState.getSelection()
 	if (selection.getAnchorKey() !== selection.getFocusKey()) {
 		return editorState
@@ -118,6 +129,24 @@ export function removeImageData(editorState: EditorState, ...dataKeys: string[])
 		}
 	}
 	return editorState
+}
+
+export function removeImageData(contentState: ContentState, contentBlock: ContentBlock, ...dataKeys: string[]) {
+	if (contentBlock && contentBlock.getType() === 'atomic') {
+		const entityKey = contentBlock.getEntityAt(0)
+		const entity = contentState.getEntity(entityKey)
+		if (entity && entity.getType().toUpperCase() === 'IMAGE') {
+			const data = entity.getData()
+			const newData: any = {}
+			for (const k in data) {
+				if (dataKeys.indexOf(k) === -1) {
+					newData[k] = data[k]
+				}
+			}
+			return (contentState as any).replaceEntityData(entityKey, newData) as ContentState
+		}
+	}
+	return contentState
 }
 
 export function getImageEntity(editorState: EditorState): EntityInstance {
