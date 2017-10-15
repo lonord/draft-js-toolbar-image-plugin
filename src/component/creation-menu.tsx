@@ -3,9 +3,16 @@ import * as React from 'react'
 import addImage from '../util/add-image'
 import readImage from '../util/image-reader'
 import { UploadManager } from '../util/upload-manager'
-import { Separator, ToolbarInputComponentClass, ToolbarInputWrapperComponentClass } from './styled'
+import {
+	Separator,
+	ToolbarInputComponentClass,
+	ToolbarInputWrapperComponentClass,
+	ToolbarTextComponentClass,
+	ToolbarTextWrapperComponentClass
+} from './styled'
 import { CheckButton, UploadButton } from './toolbar-buttons'
 import ToolbarInput from './toolbar-input'
+import ToolbarText from './toolbar-text'
 
 export interface CreationMenuProps {
 	setEditorState?(editorState: EditorState)
@@ -14,18 +21,26 @@ export interface CreationMenuProps {
 	requestEditorFocus?()
 	inputPlaceholder?: string
 	inputTheme?: { wrapper: string, input: string }
-	wrapperComponent?: ToolbarInputWrapperComponentClass
+	inputWrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
 	separatorClass?: string
-	supportUpload?: boolean
-	acceptImageFiles?(files: File[]): boolean | string
+	textTheme?: { text: string, wrapper: string }
+	textWrapperComponent?: ToolbarTextWrapperComponentClass
+	textComponent?: ToolbarTextComponentClass
+	acceptImageFiles?(files: File[]): boolean | string | Error
 	uploadManager?: UploadManager
 }
 
-export default class CreationMenu extends React.Component<CreationMenuProps, any> {
+interface CreationMenuState {
+	inputValue: string
+	errorMessage: string
+}
 
-	state = {
-		inputValue: ''
+export default class CreationMenu extends React.Component<CreationMenuProps, CreationMenuState> {
+
+	state: CreationMenuState = {
+		inputValue: '',
+		errorMessage: null
 	}
 
 	handleInputChange = (e: React.SyntheticEvent<HTMLInputElement>) => {
@@ -48,7 +63,11 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 		if (acceptImageFiles) {
 			const result = acceptImageFiles(files)
 			if (result !== true) {
-				// TODO 提示错误信息
+				if (result) {
+					this.setState({
+						errorMessage: (result instanceof Error) ? result.message : result
+					})
+				}
 				return
 			}
 		}
@@ -75,11 +94,16 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 		const {
 			inputTheme,
 			inputPlaceholder,
-			wrapperComponent,
+			inputWrapperComponent,
 			inputComponent,
 			separatorClass,
 			acceptImageFiles,
-			supportUpload, ...rest } = this.props
+			uploadManager,
+			textTheme,
+			textWrapperComponent,
+			textComponent,
+			...rest } = this.props
+		const { inputValue, errorMessage } = this.state
 		return (
 			<span>
 				<ToolbarInput
@@ -89,17 +113,23 @@ export default class CreationMenu extends React.Component<CreationMenuProps, any
 					onDismiss={this.handleKeyboardInputDismiss}
 					placeholder={inputPlaceholder}
 					theme={inputTheme}
-					wrapperComponent={wrapperComponent}
+					wrapperComponent={inputWrapperComponent}
 					inputComponent={inputComponent}
 					autoFocus={true}/>
-				<CheckButton isDisabled={!this.state.inputValue} onClick={this.handleCheckClick} {...rest} />
-				{supportUpload ?
+				<CheckButton isDisabled={!inputValue} onClick={this.handleCheckClick} {...rest} />
+				{uploadManager ?
 					separatorClass
 						? <div className={separatorClass} />
 						: <Separator />
 					: null}
-				{supportUpload
+				{uploadManager
 					? <UploadButton {...rest} onFileUpload={this.handleUpload} />
+					: null}
+				{errorMessage
+					? <ToolbarText text={errorMessage}
+						theme={textTheme}
+						textComponent={textComponent}
+						wrapperComponent={textWrapperComponent} />
 					: null}
 			</span>
 		)

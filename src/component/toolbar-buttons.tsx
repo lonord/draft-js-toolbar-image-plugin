@@ -2,7 +2,7 @@ import debug from 'debug'
 import * as React from 'react'
 import createToolbarButton, { ToolbarButtonProps } from '../util/toolbar-button-creator'
 import { InvisibleInput } from './styled'
-import { CheckIcon, ImageIcon, UploadIcon } from './svg'
+import { CheckIcon, ImageIcon, UploadIcon, RetryIcon } from './svg'
 
 const d = debug('draft-js-toolbar-image-plugin:toolbar-buttons')
 
@@ -93,3 +93,7 @@ export class UploadButton extends React.Component<UploadButtonProps, any> {
 		)
 	}
 }
+
+export const RetryButton = createToolbarButton({
+	children: <RetryIcon />
+})

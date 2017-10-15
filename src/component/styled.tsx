@@ -103,3 +103,18 @@ export const OpacityAnimationWrapper = styled.div`
 	opacity: ${(props: OpacityAnimationWrapperProps) => props.isSemitransparent ? 0.5 : 1};
 	${(props: OpacityAnimationWrapperProps) => props.isPlay ? `animation: ${opacityChange} 1s linear infinite;` : ''}
 ` as StyledComponentClass<OpacityAnimationWrapperProps, any>
+
+export type ToolbarTextWrapperComponentClass = StyledComponentClass<any, any>
+export const ToolbarTextWrapper = styled.div`
+	display: inline-block;
+` as ToolbarTextWrapperComponentClass
+
+export type ToolbarTextComponentClass = StyledComponentClass<React.HTMLProps<HTMLSpanElement>, any>
+export const ToolbarText = styled.span`
+	color: #d93a22;
+	height: 34px;
+	display: inline-block;
+	vertical-align: text-bottom;
+	line-height: 34px;
+	padding: 0 5px;
+` as ToolbarTextComponentClass

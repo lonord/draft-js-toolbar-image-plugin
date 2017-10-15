@@ -8,7 +8,12 @@ import createRenderOrderFixer from 'react-render-order-fixer'
 import CreationMenu, { CreationMenuProps } from './component/creation-menu'
 import ImageComponent from './component/image'
 import PreferenceMenu from './component/preference-menu'
-import { ToolbarInputComponentClass, ToolbarInputWrapperComponentClass } from './component/styled'
+import {
+	ToolbarInputComponentClass,
+	ToolbarInputWrapperComponentClass,
+	ToolbarTextComponentClass,
+	ToolbarTextWrapperComponentClass
+} from './component/styled'
 import { ImageTriggerButton } from './component/toolbar-buttons'
 import addImage from './util/add-image'
 import {
@@ -36,6 +41,8 @@ export interface ToolbarImagePluginTheme {
 	input?: string
 	inputWrapper?: string
 	separator?: string
+	textWrapper?: string
+	text?: string
 }
 
 export interface ToolbarImagePluginOptions {
@@ -45,8 +52,10 @@ export interface ToolbarImagePluginOptions {
 	inputPlaceholder?: string
 	inputWrapperComponent?: ToolbarInputWrapperComponentClass
 	inputComponent?: ToolbarInputComponentClass
+	textWrapperComponent?: ToolbarTextWrapperComponentClass
+	textComponent?: ToolbarTextComponentClass
 	imageUploadHandler?: UploadHandler
-	acceptImageFiles?(files: File[]): boolean | string
+	acceptImageFiles?(files: File[]): boolean | string | Error
 }
 
 export default function createToolbarImagePlugin(options: ToolbarImagePluginOptions = {}) {
@@ -86,16 +95,23 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 			wrapper: theme.inputWrapper,
 			input: theme.input
 		} : null,
+		textTheme: theme.textWrapper || theme.text ? {
+			wrapper: theme.textWrapper,
+			text: theme.text
+		} : null,
 		separatorClass: theme.separator,
 		inputPlaceholder: options.inputPlaceholder,
 		inputComponent: options.inputComponent,
-		wrapperComponent: options.inputWrapperComponent,
+		inputWrapperComponent: options.inputWrapperComponent,
+		textWrapperComponent: options.textWrapperComponent,
+		textComponent: options.textComponent,
 		requestEditorFocus: () => {
 			if (pluginFunctions && pluginFunctions.getEditorRef) {
 				const editor = pluginFunctions.getEditorRef()
 				editor.focus()
 			}
-		}
+		},
+		uploadManager
 	}
 
 	const ImageButton = createPicker({
@@ -111,9 +127,7 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 		items: [
 			decorateComponentWithProps(CreationMenu, {
 				...menuDecoratedProps,
-				supportUpload: !!options.imageUploadHandler,
-				acceptImageFiles: options.acceptImageFiles,
-				uploadManager
+				acceptImageFiles: options.acceptImageFiles
 			})
 		]
 	})
@@ -203,5 +217,9 @@ export default function createToolbarImagePlugin(options: ToolbarImagePluginOpti
 }
 
 export {
-	UploadHandler
+	UploadHandler,
+	ToolbarInputComponentClass,
+	ToolbarInputWrapperComponentClass,
+	ToolbarTextComponentClass,
+	ToolbarTextWrapperComponentClass
 }
